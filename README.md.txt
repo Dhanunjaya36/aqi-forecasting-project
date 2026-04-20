@@ -52,3 +52,30 @@ This represents a **31% improvement** over the baseline neural network reported 
 ---
 
 ## 4. Project Structure
+AQI-Forecasting-Project/
+│
+├── data/
+│   ├── raw/air_quality.csv
+│   └── processed/
+│
+├── src/  
+│   ├── data_exploration.py
+│   ├── preprocessor.py
+│   ├── xgboost_model.py
+│   ├── lstm_model.py
+│   ├── prophet_model.py
+│   └── evaluator.py
+│
+├── notebooks/  
+│   ├── 01_EDA.ipynb
+│   ├── 02_Feature_Engineering.ipynb
+│   └── 03_Model_Training.ipynb
+│
+├── results/
+│   ├── plots/
+│   └── metrics.csv
+│
+├── tests/  (Your unit tests)
+│
+├── requirements.txt
+└── README.md  
