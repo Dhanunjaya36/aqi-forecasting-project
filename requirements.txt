@@ -1,0 +1,28 @@
+# Core Data Science Libraries
+pandas==2.0.3
+numpy==1.24.3
+matplotlib==3.7.1
+seaborn==0.12.2
+scipy==1.10.1
+
+# Machine Learning
+scikit-learn==1.3.0
+xgboost==1.7.5
+
+# Deep Learning (Optional - for LSTM)
+tensorflow==2.13.0
+
+# Time Series (Optional - for Prophet)
+prophet==1.1.4
+pystan==2.19.1.1
+holidays==0.28
+
+# Utilities
+jupyter==1.0.0
+notebook==6.5.4
+ipython==8.14.0
+tqdm==4.65.0
+joblib==1.3.0
+
+# For API (Optional)
+flask==2.3.0
