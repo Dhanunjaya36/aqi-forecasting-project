@@ -64,9 +64,7 @@ AQI-Forecasting-Project/
 │   ├── xgboost_model.py
 │   ├── lstm_model.py
 │   ├── prophet_model.py
-│   └── evaluator.py
-│
-├── notebooks/  
+│   └── evaluator.py 
 │   ├── 01_EDA.ipynb
 │   ├── 02_Feature_Engineering.ipynb
 │   └── 03_Model_Training.ipynb
@@ -75,7 +73,7 @@ AQI-Forecasting-Project/
 │   ├── plots/
 │   └── metrics.csv
 │
-├── tests/  (Your unit tests)
+├── tests
 │
 ├── requirements.txt
 └── README.md  
