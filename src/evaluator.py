@@ -15,6 +15,8 @@ WHY THIS IS IMPORTANT:
 - Multiple metrics give a complete picture of model performance
 - Shows that hyperparameter tuning actually improved results
 
+Author: Dhanunjaya Rao Thandra
+Date: April 2026
 """
 
 # =============================================================================
@@ -23,6 +25,7 @@ WHY THIS IS IMPORTANT:
 import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+
 
 # =============================================================================
 # FUNCTION: calculate_metrics
@@ -39,25 +42,25 @@ def calculate_metrics(y_true, y_pred, model_name=""):
     1. RMSE (Root Mean Square Error):
        - Takes square root of average squared error
        - Penalizes large errors more than small ones
-       - Formula: √(Σ(yᵢ - ŷᵢ)² / n)
+       - Formula: square root of (sum of (actual - predicted) squared divided by n)
        - Lower is better
     
     2. MAE (Mean Absolute Error):
        - Average of absolute differences
        - Treats all errors equally
-       - Formula: Σ|yᵢ - ŷᵢ| / n
+       - Formula: sum of absolute(actual - predicted) divided by n
        - Lower is better
     
     3. R² (R-squared / Coefficient of Determination):
        - How much variance the model explains
        - 1.0 = perfect, 0.0 = no better than guessing average
-       - Formula: 1 - (SS_res / SS_tot)
+       - Formula: 1 - (sum of squared errors divided by total sum of squares)
        - Higher is better
     
     4. MAPE (Mean Absolute Percentage Error):
        - Error as a percentage
        - Easy for non-technical people to understand
-       - Formula: (100%/n) × Σ|(yᵢ - ŷᵢ)/yᵢ|
+       - Formula: (100 divided by n) times sum of absolute((actual - predicted)/actual)
        - Lower is better
     
     Args:
@@ -70,20 +73,20 @@ def calculate_metrics(y_true, y_pred, model_name=""):
     """
     
     # Calculate RMSE - penalizes large errors
-    # Example: If one prediction is way off, RMSE increases significantly
+    # If one prediction is way off, RMSE increases significantly
     rmse = np.sqrt(mean_squared_error(y_true, y_pred))
     
     # Calculate MAE - simple average error in original units
-    # Example: If MAE = 0.17, predictions are off by 0.17 units on average
+    # If MAE = 0.17, predictions are off by 0.17 units on average
     mae = mean_absolute_error(y_true, y_pred)
     
     # Calculate R² - how much variance is explained
-    # Example: R² = 0.94 means model explains 94% of variation
+    # R² = 0.94 means model explains 94% of variation
     r2 = r2_score(y_true, y_pred)
     
     # Calculate MAPE - error as percentage
     # Add small epsilon (0.001) to avoid division by zero
-    # Example: MAPE = 15% means predictions are 15% off on average
+    # MAPE = 15% means predictions are 15% off on average
     mape = np.mean(np.abs((y_true - y_pred) / (np.abs(y_true) + 0.001))) * 100
     
     # Store all metrics in a dictionary
@@ -120,61 +123,84 @@ def compare_xgboost_tuning(X_train, X_test, y_train, y_test):
     - Predictions for both (for plotting)
     
     Args:
-        X_train, X_test: Feature data for training and testing
-        y_train, y_test: Target values for training and testing
+        X_train: Training features
+        X_test: Test features
+        y_train: Training target values
+        y_test: Test target values
         
     Returns:
         tuple: (default_metrics, tuned_metrics, predictions_tuple)
                Returns (None, None, None) if XGBoost not installed
     """
-
     
     # Try to import XGBoost - it might not be installed
     try:
         import xgboost as xgb
         
-        # ========== CONVERT TO NUMPY ARRAYS ==========
+        # Convert to numpy arrays for faster processing
         # Handle both pandas DataFrames and numpy arrays
         # .values converts pandas DataFrame to numpy array
-        X_train_np = X_train.values if hasattr(X_train, 'values') else X_train
-        X_test_np = X_test.values if hasattr(X_test, 'values') else X_test
-        y_train_np = y_train.values if hasattr(y_train, 'values') else y_train
-        y_test_np = y_test.values if hasattr(y_test, 'values') else y_test
+        if hasattr(X_train, 'values'):
+            X_train_np = X_train.values
+            X_test_np = X_test.values
+            y_train_np = y_train.values
+            y_test_np = y_test.values
+        else:
+            X_train_np = X_train
+            X_test_np = X_test
+            y_train_np = y_train
+            y_test_np = y_test
         
-        # ========== DEFAULT XGBOOST (BEFORE TUNING) ==========
-        # This uses sklearn's default parameters:
+        # Default XGBoost (before tuning)
+        # Uses sklearn's default parameters:
         # - n_estimators: 100 trees
         # - max_depth: 6 levels
         # - learning_rate: 0.3
         # - No subsampling (uses all data)
-        print("\n DEFAULT XGBoost (No Tuning)")
-        print("-"*40)
+        print("\n" + "="*50)
+        print("DEFAULT XGBoost (No Tuning)")
+        print("="*50)
         
+        # Create and train default model
         xgb_default = xgb.XGBRegressor(random_state=42)
         xgb_default.fit(X_train_np, y_train_np)
         y_pred_default = xgb_default.predict(X_test_np)
         
         # Calculate metrics for default version
         default_metrics = calculate_metrics(y_test_np, y_pred_default, "Default XGBoost")
-
-
         
-        # ========== TUNED XGBOOST (AFTER TUNING) ==========
+        # Print default results
+        print("\nDefault Parameters:")
+        print("  - n_estimators: 100")
+        print("  - max_depth: 6")
+        print("  - learning_rate: 0.3")
+        print("  - subsample: 1.0")
+        print("  - colsample_bytree: 1.0")
+        
+        print("\nPerformance:")
+        print(f"  - RMSE: {default_metrics['RMSE']:.4f} mg/m^3")
+        print(f"  - MAE: {default_metrics['MAE']:.4f} mg/m^3")
+        print(f"  - R²: {default_metrics['R2']:.4f}")
+        print(f"  - MAPE: {default_metrics['MAPE']:.2f}%")
+        
+        # Tuned XGBoost (after tuning)
         # Optimized parameters after manual testing:
         # - n_estimators: 300 trees (more trees = better learning)
         # - max_depth: 8 layers (deeper trees = capture complex patterns)
         # - learning_rate: 0.05 (slower learning = better convergence)
         # - subsample: 0.8 (use 80% of data per tree = prevent overfitting)
         # - colsample_bytree: 0.8 (use 80% of features per tree = prevent overfitting)
-        print("\n Tuned XGBoost (After Tuning)")
-        print("-"*40)
+        print("\n" + "="*50)
+        print("Tuned XGBoost (After Tuning)")
+        print("="*50)
         
+        # Create and train tuned model
         xgb_tuned = xgb.XGBRegressor(
-            n_estimators=300,      # More trees
-            max_depth=8,           # Deeper trees
-            learning_rate=0.05,    # Slower learning
-            subsample=0.8,         # 80% data per tree
-            colsample_bytree=0.8,  # 80% features per tree
+            n_estimators=300,
+            max_depth=8,
+            learning_rate=0.05,
+            subsample=0.8,
+            colsample_bytree=0.8,
             random_state=42
         )
         xgb_tuned.fit(X_train_np, y_train_np)
@@ -182,24 +208,46 @@ def compare_xgboost_tuning(X_train, X_test, y_train, y_test):
         
         # Calculate metrics for tuned version
         tuned_metrics = calculate_metrics(y_test_np, y_pred_tuned, "Tuned XGBoost")
-
-
         
-        # ========== CALCULATE IMPROVEMENT ==========
-        # Show how much better tuning made the model
+        # Print tuned results
+        print("\nTuned Parameters:")
+        print("  - n_estimators: 300")
+        print("  - max_depth: 8")
+        print("  - learning_rate: 0.05")
+        print("  - subsample: 0.8")
+        print("  - colsample_bytree: 0.8")
+        
+        print("\nPerformance:")
+        print(f"  - RMSE: {tuned_metrics['RMSE']:.4f} mg/m^3")
+        print(f"  - MAE: {tuned_metrics['MAE']:.4f} mg/m^3")
+        print(f"  - R²: {tuned_metrics['R2']:.4f}")
+        print(f"  - MAPE: {tuned_metrics['MAPE']:.2f}%")
+        
+        # Calculate and print improvement
         improvement_rmse = ((default_metrics['RMSE'] - tuned_metrics['RMSE']) / default_metrics['RMSE']) * 100
         improvement_r2 = ((tuned_metrics['R2'] - default_metrics['R2']) / default_metrics['R2']) * 100
+        improvement_mae = ((default_metrics['MAE'] - tuned_metrics['MAE']) / default_metrics['MAE']) * 100
         
-        # Print improvement summary
-        print(f"\n HYPERPARAMETER TUNING IMPROVEMENT:")
-        print(f"   RMSE decreased by {improvement_rmse:.1f}%")
-        print(f"   R² increased by {improvement_r2:.1f}%")
+        print("\n" + "="*50)
+        print("Hyperparameter Tuning Improvement")
+        print("="*50)
+        print(f"\n  - RMSE decreased by: {improvement_rmse:.1f}%")
+        print(f"    (from {default_metrics['RMSE']:.4f} to {tuned_metrics['RMSE']:.4f})")
+        print(f"  - MAE decreased by: {improvement_mae:.1f}%")
+        print(f"    (from {default_metrics['MAE']:.4f} to {tuned_metrics['MAE']:.4f})")
+        print(f"  - R² increased by: {improvement_r2:.1f}%")
+        print(f"    (from {default_metrics['R2']:.4f} to {tuned_metrics['R2']:.4f})")
         
-        # Return all results
+        # Return all results for further use (like plotting)
         return default_metrics, tuned_metrics, (y_pred_default, y_pred_tuned)
         
-    except Exception as e:
-        # Handle case where XGBoost is not installed or other errors
-        print(f"Could not run hyperparameter comparison: {e}")
+    except ImportError:
+        # Handle case where XGBoost is not installed
+        print("\nWarning: XGBoost is not installed. Cannot perform tuning comparison.")
+        print("To install XGBoost, run: pip install xgboost")
         return None, None, None
-
+        
+    except Exception as e:
+        # Handle any other errors
+        print(f"\nError in hyperparameter comparison: {e}")
+        return None, None, None
