@@ -59,14 +59,14 @@ AQI-Forecasting-Project/
 │   └── processed/
 │
 ├── src/  
-│   ├── data_exploration.py
+│   ├── init.py
 |   ├── config.py
-|   ├── init.py
+|   ├── data_exploration.py
 │   ├── preprocessor.py
-│   ├── models.py
-│   └── evaluator.py 
 │   ├── Feature_Engineering.ipynb
-│   └── Model_Training.ipynb
+│   └──  models.py
+│   ├──  evaluator.py
+│   └── visualizer.py 
 │
 ├── results/
 │   ├── plots/
