@@ -60,14 +60,13 @@ AQI-Forecasting-Project/
 │
 ├── src/  
 │   ├── data_exploration.py
+|   ├── config.py
+|   ├── init.py
 │   ├── preprocessor.py
-│   ├── xgboost_model.py
-│   ├── lstm_model.py
-│   ├── prophet_model.py
+│   ├── models.py
 │   └── evaluator.py 
-│   ├── 01_EDA.ipynb
-│   ├── 02_Feature_Engineering.ipynb
-│   └── 03_Model_Training.ipynb
+│   ├── Feature_Engineering.ipynb
+│   └── Model_Training.ipynb
 │
 ├── results/
 │   ├── plots/
