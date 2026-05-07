@@ -24,6 +24,7 @@ Date: April 2026
 # =============================================================================
 import numpy as np
 import pandas as pd
+from .config import XGB_PARAMS
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 
@@ -195,14 +196,7 @@ def compare_xgboost_tuning(X_train, X_test, y_train, y_test):
         print("="*50)
         
         # Create and train tuned model
-        xgb_tuned = xgb.XGBRegressor(
-            n_estimators=300,
-            max_depth=8,
-            learning_rate=0.05,
-            subsample=0.8,
-            colsample_bytree=0.8,
-            random_state=42
-        )
+        xgb_tuned = xgb.XGBRegressor(**XGB_PARAMS)
         xgb_tuned.fit(X_train_np, y_train_np)
         y_pred_tuned = xgb_tuned.predict(X_test_np)
         
